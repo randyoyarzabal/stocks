@@ -1,3 +1,10 @@
+# Project-based user specific
+conf/certificate.pem
+conf/config.json
+conf/creds_cache.json
+conf/key.pem
+conf/portfolios/*
+
 # Created by .ignore support plugin (hsz.mobi)
 ### Python template
 # Byte-compiled / optimized / DLL files
