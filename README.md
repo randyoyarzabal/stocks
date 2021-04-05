@@ -1,7 +1,8 @@
-# Stock and Bitcoin Portfolio Management
+# Stock and Crypto Portfolio Management
 Documentation is work in progress...
 
 ## A TD Ameritrade account is required.
+## A Finnhub.io account is required if processing Crypto quotes.
 
 # Quick Start
 1. Install package requirements from "requirements.txt"
