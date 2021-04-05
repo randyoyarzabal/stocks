@@ -11,8 +11,8 @@ Documentation is work in progress...
 5. Run the authentication for the first time: ./stocks.py -a
 
 # Basic Use Commands
-Help: ./stocks.py -h
-Stats: ./stocks.py -s
-Portfolio View: ./stocks.py -p <portfolio>
-All Portfolios: ./stocks.py -a all
+- Help: ./stocks.py -h
+- Stats: ./stocks.py -s
+- Portfolio View: ./stocks.py -p <portfolio>
+- All Portfolios: ./stocks.py -a all
 
