@@ -189,9 +189,6 @@ class PortfolioLibrary:
         return self.df.loc[x_idx, 'Portfolio'], self.df.loc[x_idx, 'Symbol'], self.df.loc[x_idx, col_name]
 
     def get_portfolio_names(self):
-        # portfolios = []
-        # for p in sorted(self.portfolios):
-        #     portfolios.append(p)
         return sorted(self.portfolios.keys())
 
     def read_portfolios(self):
@@ -619,58 +616,3 @@ class PortfolioLibrary:
                 xfers.append([key, symbols[key]])
             table = columnar(xfers, headers=['Symbol', 'Qty'], no_borders=True)
             print(table)
-
-    # get_history(ROTH)
-    # jprint(self.td_client.get_transactions(account=INDIVIDUAL, transaction_type='CASH_IN_OR_CASH_OUT', start_date='2021-01-01'))
-    # jprint(self.td_client.get_transactions(account=INDIVIDUAL, transaction_type='OTHER', start_date='2021-01-01'))
-    # jprint(self.td_client.get_accounts(account=INDIVIDUAL, fields=['positions']))
-
-    # TODO: Test authentication and reauthenticate if needed.
-
-    # quotes = self.td_client.get_quotes(instruments=['AMZN', 'SQ'])
-    # for x in quotes:
-    #     print(quotes[x]['description'])
-    #     print(quotes[x]['lastPrice'])
-
-    # print(self.td_client.get_accounts())
-
-    # orders = self.td_client.get_orders_query(from_entered_time='2021-01-01', to_entered_time='2021-12-31', status='QUEUED')
-    # self.td_client.get
-    # # print(json.dumps(orders, indent=4))
-    # # exit()
-    # symbols = {}
-    # for o in orders:
-    #     # print(json.dumps(o, indent=4))
-    #     symbol = o['orderLegCollection'][0]['instrument']['symbol']
-    #     orders = symbols.get(symbol, [])
-    #     order = [o['orderLegCollection'][0]['instruction'],
-    #              o['orderLegCollection'][0]['quantity'],
-    #              o['orderActivityCollection'][0]['executionLegs'][0]['price'],
-    #              o['orderActivityCollection'][0]['executionLegs'][0]['time']
-    #              ]
-    #     orders.append(order)
-    #     symbols[symbol] = orders
-    # 
-    # print(json.dumps(symbols, indent=4))
-
-    # print(self.td_client.account_number)
-    # print(self.td_client.get_accounts())
-    #     print(quotes[x]['description'])
-    #     print(quotes[x]['lastPrice'])
-    # symbol = 'sndl'.upper()
-    # o_type = 'buy'
-    # quantity = 1
-    # quotes = self.td_client.get_quotes(instruments=[symbol])
-    # if util.query_yes_no("{} - Current Price is: {}, Buy {}. Continue?".format(
-    #         symbol,
-    #         quotes[symbol]['lastPrice'],
-    #         quantity)
-    # ):
-    #     # Place the Order.
-    #     order_response = self.td_client.place_order(
-    #         account=self.td_client.account_number,
-    #         order=create_order(symbol=symbol, order_type=o_type, price_type='MARKET', quantity=quantity, price=0)
-    #     )
-    #
-    #     # Print the Response.
-    #     pprint(order_response)
