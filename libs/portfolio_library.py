@@ -48,7 +48,7 @@ class PortfolioLibrary:
         self.portfolios = {}
         self.td = None
         self.td_roth = None
-        self.no_bitcoin = True
+        self.no_crypto = True
         self.td_client = TDClient(
             client_id=self.td_driver.client_id,
             redirect_uri=self.td_driver.redirect_uri,
@@ -74,7 +74,7 @@ class PortfolioLibrary:
         if 'ACCOUNT' in portfolio:
             self.get_positions(name, account=portfolio['ACCOUNT'], silent=silent)
         else:
-            self.get_positions(name, portfolio=portfolio['HOLDINGS'], bitcoin=(name == 'BITCOIN'), silent=silent)
+            self.get_positions(name, portfolio=portfolio['HOLDINGS'], crypto=(name == 'CRYPTO'), silent=silent)
 
     def print_stats(self, print_stats=True, print_stocks=False):
         if print_stats:
@@ -213,7 +213,7 @@ class PortfolioLibrary:
 
     def load_portfolios(self):
         for portfolio in self.get_portfolio_names():
-            if self.no_bitcoin and portfolio == 'BITCOIN':
+            if self.no_crypto and portfolio == 'CRYPTO':
                 continue
             self.print_portfolio(portfolio, silent=True)
 
@@ -404,7 +404,7 @@ class PortfolioLibrary:
             c_str = colored(c_str, text_color)
         return c_str
 
-    def get_quotes(self, tickers, portfolio, bitcoin):
+    def get_quotes(self, tickers, portfolio, crypto):
         # Artificially create dict of quotes as if it is a result of API call
         quotes = {}
         td_quotes = self.td_client.get_quotes(instruments=tickers.keys())
@@ -418,7 +418,7 @@ class PortfolioLibrary:
                     'lastPrice': td_quotes[ticker]['lastPrice'],
                 }
             else:
-                if bitcoin:
+                if crypto:
                     ticker_data = {
                         'description': tickers[ticker][0],
                         'longQuantity': float(tickers[ticker][1]),
@@ -459,7 +459,7 @@ class PortfolioLibrary:
                 c_str = '{:,.2f}'.format(float(c_str))
         return c_str
 
-    def get_positions(self, name, account=None, portfolio=None, bitcoin=False, silent=False):
+    def get_positions(self, name, account=None, portfolio=None, crypto=False, silent=False):
         tickers = {}
         data = []
         if not portfolio:
@@ -472,7 +472,7 @@ class PortfolioLibrary:
             for x in portfolio:
                 tickers[x] = portfolio[x]  # Convert list to dict of dicts w/ ticker as the key
 
-        quotes = self.get_quotes(tickers, portfolio, bitcoin)
+        quotes = self.get_quotes(tickers, portfolio, crypto)
 
         total_gain_p = 0
         total_cost = 0

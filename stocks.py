@@ -16,7 +16,7 @@ def main():
         prog=__file__,
         formatter_class=argparse.RawDescriptionHelpFormatter,
         # argument_default=argparse.SUPPRESS,  # Suppress args creation (None) for optional parameters.
-        description="""{} - Stock / Bitcoin Portfolio Tracking Tool.
+        description="""{} - Stock / Crypto Portfolio Tracking Tool.
 by {}
 {}
 """.format(banner(tool), AUTHOR, GIT_REPO),
@@ -52,8 +52,8 @@ by {}
                           default=False, help='Display borders.')
     optional.add_argument('-n', '--no_totals', action='store_true',
                           default=False, help='Don\'t display \'Totals\' row.')
-    optional.add_argument('-ib', '--bitcoin', action='store_true',
-                          default=False, help='Include bitcion in portfolio statistics.')
+    optional.add_argument('-ic', '--crypto', action='store_true',
+                          default=False, help='Include crypto in portfolio statistics.')
     p_actions = optional.add_mutually_exclusive_group()
     p_actions.add_argument('-s', '--stats', action='store_true',
                            default=False, help='Display portfolio statistics.')
@@ -77,7 +77,7 @@ by {}
         pl.day = args.day
         pl.borders = args.borders
         pl.totals = not args.no_totals
-        pl.no_bitcoin = not args.bitcoin
+        pl.no_crypto = not args.crypto
         if args.portfolio is not None:
             # Display individual portfolios (-p)
             for portfolio in args.portfolio:
