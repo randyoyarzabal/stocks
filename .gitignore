@@ -4,6 +4,8 @@ conf/config.json
 conf/creds_cache.json
 conf/key.pem
 conf/portfolios/*.json
+conf/backup
+conf/backup/*
 
 # Created by .ignore support plugin (hsz.mobi)
 ### Python template
