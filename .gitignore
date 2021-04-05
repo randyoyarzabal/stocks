@@ -3,7 +3,7 @@ conf/certificate.pem
 conf/config.json
 conf/creds_cache.json
 conf/key.pem
-conf/portfolios/*
+conf/portfolios/*.json
 
 # Created by .ignore support plugin (hsz.mobi)
 ### Python template
@@ -151,6 +151,7 @@ cython_debug/
 # Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
 
 # User-specific stuff
+.idea
 .idea/**/workspace.xml
 .idea/**/tasks.xml
 .idea/**/usage.statistics.xml
