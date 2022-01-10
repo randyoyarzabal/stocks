@@ -67,7 +67,6 @@ by {}
     p_actions.add_argument('-p', dest='portfolio', help='Display portfolio',
                            action='append', nargs='+', choices=portfolio_list,
                            type=lambda s: s.upper())
-
     if len(sys.argv[1:]) == 0:
         parser.print_help()
         parser.exit()
@@ -78,23 +77,21 @@ by {}
         pl.borders = args.borders
         pl.totals = not args.no_totals
         pl.no_crypto = not args.crypto
+        if not args.auth:
+            pl.load_portfolios()
         if args.portfolio is not None:
             # Display individual portfolios (-p)
             for portfolio in args.portfolio:
                 if portfolio[0] == 'ALL':
-                    pl.load_portfolios()  # Only pre-load when stats are needed
                     pl.print_stats(print_stats=False, print_stocks=True)
                 else:
                     pl.print_portfolio(portfolio[0])
         elif args.csv_file is not None:
             # Export to CSV (-c)
-            pl.no_crypto = False  # Force crypto into CSV
-            pl.load_portfolios()
             pl.df.to_csv(args.csv_file[0], index=False, header=True, encoding='utf-8')
             print('Exported data to CSV file: {}'.format(args.csv_file[0]))
         elif args.stats:
             # Display statistics tables (-s)
-            pl.load_portfolios()  # Only pre-load when stats are needed
             pl.print_stats()
         elif args.auth:
             # Perform OAuth web authentication (-a)
