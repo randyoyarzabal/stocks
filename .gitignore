@@ -1,4 +1,6 @@
 # Project-based user specific
+config/
+config/*
 conf/certificate.pem
 conf/config.json
 conf/creds_cache.json

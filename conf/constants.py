@@ -1,5 +1,5 @@
-VERSION = 'v0.1'
-RELEASE_DATE = '2021-Apr-04'
+VERSION = 'v0.2'
+RELEASE_DATE = '2022-Jan-09'
 AUTHOR = 'Randy E. Oyarzabal'
 GIT_REPO = 'https://github.com/randyoyarzabal/stocks'
 
