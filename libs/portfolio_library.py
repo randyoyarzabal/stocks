@@ -1,7 +1,6 @@
 import re
 import traceback
-import json
-from termcolor import colored, cprint
+from termcolor import colored
 import locale
 import finnhub
 import pandas as pd
@@ -19,7 +18,6 @@ locale.setlocale(locale.LC_ALL, '')  # Use '' for auto, or force e.g. to 'en_US.
 
 
 class PortfolioLibrary:
-
     def __init__(self, debug=False):
         load_dotenv()
         self.debug = debug
@@ -33,18 +31,12 @@ class PortfolioLibrary:
         self.headers = []
         self.print_data = []  # List of rows for console (colored) purposes
         self.calc_data = []  # List of rows for calculation (raw) purposes
-        self.config = None
+        self.config = get_config()
         self.finnhub_client = None
-        self.config_filename = os.getenv('CONFIG_FILE')
-        if os.path.isfile(self.config_filename):
-            with open(self.config_filename, encoding='utf-8', errors='ignore') as config_fh:
-                self.config = json.load(config_fh, strict=False)
-        else:
-            raise FileNotFoundError("{} was not found.".format(self.config_filename))
         # ToDo: Check if API key is defined.
         self.api_key = self.config['FINNHUB']['API_KEY']
         self.finnhub_client = finnhub.Client(api_key=self.api_key)
-        self.td_driver = TDAuthenticationDriver(debug=self.debug, config=self.config)
+        self.td_driver = TDAuthenticationDriver(self.debug)
         self.portfolios = {}
         self.td = None
         self.td_roth = None
@@ -69,12 +61,12 @@ class PortfolioLibrary:
             exit(1)
         self.td_driver.authenticate(force=force)
 
-    def print_portfolio(self, name, silent=False):
-        portfolio = self.portfolios[name]
+    def print_portfolio(self, pname, silent=False):
+        portfolio = self.portfolios[pname]
         if 'ACCOUNT' in portfolio:
-            self.get_positions(name, account=portfolio['ACCOUNT'], silent=silent)
+            self.get_positions(pname, account=portfolio['ACCOUNT'], silent=silent)
         else:
-            self.get_positions(name, portfolio=portfolio['HOLDINGS'], crypto=(name == 'CRYPTO'), silent=silent)
+            self.get_positions(pname, portfolio=portfolio['HOLDINGS'], crypto=(pname == 'CRYPTO'), silent=silent)
 
     def print_stats(self, print_stats=True, print_stocks=False):
         if print_stats:
@@ -301,7 +293,8 @@ class PortfolioLibrary:
             tvol_str = '{}'.format(tvol)
         return tvol_str
 
-    def get_desc(self, d_str):
+    @staticmethod
+    def get_desc(d_str):
         d_str = d_str.replace('Common Stock', '')
         d_str = d_str.replace(' - ', '')
         d_str = re.sub(r'(.*)American [Dd].*', r'\1', d_str)
@@ -313,7 +306,8 @@ class PortfolioLibrary:
         d_str = d_str.strip()
         return d_str
 
-    def get_change(self, change):
+    @staticmethod
+    def get_change(change):
         return "{:.2f}".format(float(change) * 100)
 
     def get_movers(self, index=DJI, direction='up', change='percent'):
@@ -464,10 +458,11 @@ class PortfolioLibrary:
         data = []
         if not portfolio:
             data_dict = self.td_client.get_accounts(account=account, fields=['positions'])
-            positions = data_dict['securitiesAccount']['positions']
-            for x in positions:
-                ticker = x['instrument']['symbol']
-                tickers[ticker] = x  # Convert list to dict of dicts w/ ticker as the key
+            if 'positions' in data_dict['securitiesAccount']:  # Possibly empty account
+                positions = data_dict['securitiesAccount']['positions']
+                for x in positions:
+                    ticker = x['instrument']['symbol']
+                    tickers[ticker] = x  # Convert list to dict of dicts w/ ticker as the key
         else:
             for x in portfolio:
                 tickers[x] = portfolio[x]  # Convert list to dict of dicts w/ ticker as the key

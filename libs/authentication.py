@@ -9,19 +9,19 @@ from dotenv import load_dotenv
 from datetime import datetime
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from urllib.parse import parse_qs, quote_plus
+from .utilities import *
 
 
 # Authentication based on code from: https://github.com/isonium/TDAmeritrade-API
 class TDAuthenticationDriver:
-    def __init__(self, debug=False, config=None):
+    def __init__(self, debug=False):
         load_dotenv()
+        self.config = get_config()['TD_AMERITRADE']
         self.debug = debug
-        self.config = None
         self.auth_filename = os.getenv('CREDENTIAL_CACHE_FILE')
         self.tokens = {'access_token': None,
                        'refresh_token': None,
                        }
-        self.config = config['TD_AMERITRADE']
         self.redirect_uri = "https://" + self.config['HOST']
         if self.config['PORT'] != 443:
             self.redirect_uri = self.redirect_uri + ":" + str(self.config['PORT'])
