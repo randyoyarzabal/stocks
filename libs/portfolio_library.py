@@ -300,6 +300,7 @@ class PortfolioLibrary:
         d_str = re.sub(r'(.*)American [Dd].*', r'\1', d_str)
         d_str = d_str.replace('Class A', '')
         d_str = d_str.replace('Common Shares', '')
+        d_str = d_str.replace('Ordinary Shares', '')
         d_str = d_str.replace('Consumer Discretionary', '')
         d_str = d_str.replace('Aberdeen Standard Physical', '')
         d_str = ' '.join(d_str.split())  # Smash multi-spaces to one.
