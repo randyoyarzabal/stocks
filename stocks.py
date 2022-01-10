@@ -88,6 +88,8 @@ by {}
                     pl.print_portfolio(portfolio[0])
         elif args.csv_file is not None:
             # Export to CSV (-c)
+            pl.no_crypto = False  # Force crypto into CSV
+            pl.load_portfolios()
             pl.df.to_csv(args.csv_file[0], index=False, header=True, encoding='utf-8')
             print('Exported data to CSV file: {}'.format(args.csv_file[0]))
         elif args.stats:
