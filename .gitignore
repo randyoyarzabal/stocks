@@ -1,5 +1,7 @@
 # Project-based user specific
+history/
 config/
+history/*
 config/*
 conf/certificate.pem
 conf/config.json

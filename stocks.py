@@ -59,6 +59,8 @@ by {}
                            default=False, help='Display portfolio statistics.')
     p_actions.add_argument('-c', '--to_csv', dest='csv_file', help='Export portfolio to CSV.',
                            action='store', nargs=1)
+    optional.add_argument("-t", "--terminal_width", type=int, default=120,
+                          help="Terminal column width integer. Default is 120.")
     pl = PortfolioLibrary()
     portfolio_list = pl.get_portfolio_names()
     portfolio_list.append('ALL')
@@ -75,6 +77,7 @@ by {}
         pl.debug = args.debug
         pl.day = args.day
         pl.borders = args.borders
+        pl.t_width = args.terminal_width
         pl.totals = not args.no_totals
         pl.no_crypto = not args.crypto
         if not args.auth:

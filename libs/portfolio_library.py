@@ -3,6 +3,7 @@ import traceback
 from termcolor import colored
 import locale
 import finnhub
+import fnmatch
 import pandas as pd
 from dotenv import load_dotenv
 from td.client import TDClient
@@ -26,6 +27,7 @@ class PortfolioLibrary:
         self.day = False
         self.totals = True
         self.df = None  # Pandas dataframe for all stocks
+        self.t_width = 120
         self.stats = {}  # Various stock stats calculated
         self.cost_label = ''  # Ave$ or Day$
         self.headers = []
@@ -53,6 +55,11 @@ class PortfolioLibrary:
                 self.td_client.get_quotes(instruments=['AAPL'])  # A test API call to induce error/re-auth if needed.
         except TknExpError:
             pass
+        except ConnectionError as ce:
+            print("Unable to make a connection TD Ameritrade API.  Exiting with errors:")
+            print(ce)
+            exit(1)
+
         self.read_portfolios()
 
     def authenticate(self, force=False):
@@ -295,15 +302,31 @@ class PortfolioLibrary:
 
     @staticmethod
     def get_desc(d_str):
-        d_str = d_str.replace('Common Stock', '')
-        d_str = d_str.replace(' - ', '')
+        exclude_words = (
+            'Class A',
+            'Common Stock',
+            'Ordinary Shares',
+            'Common Shares',
+            'Acquisition',
+            'Consumer Discretionary',
+            'Aberdeen Standard Physical',
+            'Corporation',
+            'Group',
+            'Capital',
+            'Entertainment',
+            '-',
+        )
+
+        if 'INVESCO' in d_str:
+            d_str = d_str.title()
+
+        for word in exclude_words:
+            if word in d_str:
+                d_str = d_str.replace(word, '')
+
         d_str = re.sub(r'(.*)American [Dd].*', r'\1', d_str)
-        d_str = d_str.replace('Class A', '')
-        d_str = d_str.replace('Common Shares', '')
-        d_str = d_str.replace('Ordinary Shares', '')
-        d_str = d_str.replace('Consumer Discretionary', '')
-        d_str = d_str.replace('Aberdeen Standard Physical', '')
         d_str = ' '.join(d_str.split())  # Smash multi-spaces to one.
+        d_str = d_str.replace('. ,', '.')
         d_str = d_str.strip()
         return d_str
 
@@ -439,7 +462,7 @@ class PortfolioLibrary:
         # x = 54.4
         # y = number - int(number)
         # y should give us the fractional part: .4, but for some reason it is giving '0.3999999999999986'
-        # This complicate things, the below, ensure the behavior we want.
+        # This complicates things, the below, ensures the behavior we want.
         if nround:
             c_str = '{:,.2f}'.format(num)
         else:
@@ -551,7 +574,7 @@ class PortfolioLibrary:
 
         table = columnar(data,
                          headers=self.headers[1:],  # Remove "Portfolio" column
-                         no_borders=(not self.borders))
+                         no_borders=(not self.borders), terminal_width=self.t_width)
 
         if not silent:
             print('Portfolio: {} (Ave. Gain%: {})'.format(colored(name, color='blue'), ave_gain_p))
