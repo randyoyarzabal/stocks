@@ -317,20 +317,33 @@ class PortfolioLibrary:
             'Acquisition',
             'Consumer Discretionary',
             'Aberdeen Standard Physical',
-            'Corporation',
             'Group',
             'Capital',
             'Entertainment',
             '-',
+            'abrdn',
+            'Status Alert: Deficient',
+            'and Delinquent',
+            'AMC Preferred Equity Units, each constituting a',
+            'TR ETH Common units of fractional undivided beneficial intere',
         )
 
-        if 'INVESCO' in d_str:
-            d_str = d_str.title()
+        title_words = (
+            'INVESCO',
+            'GRAYSCALE',
+            'ETHEREUM',
+        )
 
+        # Strip excluded words
         for word in exclude_words:
             if word in d_str:
                 d_str = d_str.replace(word, '')
 
+        # Titlecase words
+        if any(substr in d_str for substr in title_words):
+            d_str = d_str.title()
+
+        # Remove all test starting with "American D*"
         d_str = re.sub(r'(.*)American [Dd].*', r'\1', d_str)
         d_str = ' '.join(d_str.split())  # Smash multi-spaces to one.
         d_str = d_str.replace('. ,', '.')
@@ -434,26 +447,27 @@ class PortfolioLibrary:
         quotes = {}
         td_quotes = self.td_client.get_quotes(instruments=tickers.keys())
         for ticker in tickers:
-            if ticker in td_quotes:
-                if not portfolio:
+            ticker_data = None
+            if not portfolio:
+                ticker_data = {
+                    'description': td_quotes[ticker]['description'],
+                    'longQuantity': tickers[ticker]['longQuantity'],
+                    'averagePrice': tickers[ticker]['averagePrice'],
+                    'openPrice': td_quotes[ticker]['openPrice'],
+                    'lastPrice': td_quotes[ticker]['lastPrice'],
+                }
+            else:
+                if crypto:
                     ticker_data = {
-                        'description': td_quotes[ticker]['description'],
-                        'longQuantity': tickers[ticker]['longQuantity'],
-                        'averagePrice': tickers[ticker]['averagePrice'],
-                        'openPrice': td_quotes[ticker]['openPrice'],
-                        'lastPrice': td_quotes[ticker]['lastPrice'],
+                        'description': tickers[ticker][0],
+                        'longQuantity': float(tickers[ticker][1]),
+                        'averagePrice': tickers[ticker][2],
+                        # Use finnhub for Bitcoin quotes.
+                        'openPrice': self.finnhub_client.quote(ticker)['o'],
+                        'lastPrice': self.finnhub_client.quote(ticker)['c']
                     }
                 else:
-                    if crypto:
-                        ticker_data = {
-                            'description': tickers[ticker][0],
-                            'longQuantity': float(tickers[ticker][1]),
-                            'averagePrice': tickers[ticker][2],
-                            # Use finnhub for Bitcoin quotes.
-                            'openPrice': self.finnhub_client.quote(ticker)['o'],
-                            'lastPrice': self.finnhub_client.quote(ticker)['c']
-                        }
-                    else:
+                    if ticker in td_quotes:
                         ticker_data = {
                             'description': td_quotes[ticker]['description'],
                             'longQuantity': float(tickers[ticker][0]),
@@ -461,10 +475,10 @@ class PortfolioLibrary:
                             'openPrice': td_quotes[ticker]['openPrice'],
                             'lastPrice': td_quotes[ticker]['lastPrice'],
                         }
-                quotes[ticker] = ticker_data
-            else:
-                print('WARNING: Stock ticker "{}" not found in {}. Remove from portfolio to suppress this message.'.format(ticker, name))
-            
+                    else:
+                        print('WARNING: Stock ticker "{}" not found in {}. Remove from portfolio to suppress this message.'.format(ticker, name))
+            if ticker_data:
+                quotes[ticker] = ticker_data     
         return quotes
 
     def pad_float(self, num, nround=False):
