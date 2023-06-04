@@ -449,8 +449,8 @@ class PortfolioLibrary:
                             'description': tickers[ticker][0],
                             'longQuantity': float(tickers[ticker][1]),
                             'averagePrice': tickers[ticker][2],
-                            'openPrice': self.finnhub_client.quote(ticker)['o'],
                             # Use finnhub for Bitcoin quotes.
+                            'openPrice': self.finnhub_client.quote(ticker)['o'],
                             'lastPrice': self.finnhub_client.quote(ticker)['c']
                         }
                     else:
@@ -461,9 +461,10 @@ class PortfolioLibrary:
                             'openPrice': td_quotes[ticker]['openPrice'],
                             'lastPrice': td_quotes[ticker]['lastPrice'],
                         }
+                quotes[ticker] = ticker_data
             else:
                 print('WARNING: Stock ticker "{}" not found in {}. Remove from portfolio to suppress this message.'.format(ticker, name))
-            quotes[ticker] = ticker_data
+            
         return quotes
 
     def pad_float(self, num, nround=False):
