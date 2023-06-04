@@ -7,7 +7,7 @@ import fnmatch
 import pandas as pd
 from dotenv import load_dotenv
 from td.client import TDClient
-from td.exceptions import TknExpError
+from td.exceptions import TknExpError, ForbidError
 from columnar import columnar
 from .authentication import TDAuthenticationDriver
 from .utilities import *
@@ -43,6 +43,7 @@ class PortfolioLibrary:
         self.td = None
         self.td_roth = None
         self.no_crypto = True
+
         self.td_client = TDClient(
             client_id=self.td_driver.client_id,
             redirect_uri=self.td_driver.redirect_uri,
@@ -214,7 +215,13 @@ class PortfolioLibrary:
         for portfolio in self.get_portfolio_names():
             if self.no_crypto and portfolio == 'CRYPTO':
                 continue
-            self.print_portfolio(portfolio, silent=True)
+            try:
+                self.print_portfolio(portfolio, silent=True)
+            except TypeError:
+                print ('ERROR: Authentication expired? Try reauthenticating: "$> stocks.py --auth"')
+                exit()
+            except ForbidError:
+                print ('WARNING: No access to account: "{}". Remove from portfolio list to suppress this message.'.format(portfolio))
 
         # Process data as pandas dataframe
         data = sorted(self.calc_data, key=lambda x: x[0])
@@ -422,37 +429,40 @@ class PortfolioLibrary:
             c_str = colored(c_str, text_color)
         return c_str
 
-    def get_quotes(self, tickers, portfolio, crypto):
+    def get_quotes(self, name, tickers, portfolio, crypto):
         # Artificially create dict of quotes as if it is a result of API call
         quotes = {}
         td_quotes = self.td_client.get_quotes(instruments=tickers.keys())
         for ticker in tickers:
-            if not portfolio:
-                ticker_data = {
-                    'description': td_quotes[ticker]['description'],
-                    'longQuantity': tickers[ticker]['longQuantity'],
-                    'averagePrice': tickers[ticker]['averagePrice'],
-                    'openPrice': td_quotes[ticker]['openPrice'],
-                    'lastPrice': td_quotes[ticker]['lastPrice'],
-                }
-            else:
-                if crypto:
-                    ticker_data = {
-                        'description': tickers[ticker][0],
-                        'longQuantity': float(tickers[ticker][1]),
-                        'averagePrice': tickers[ticker][2],
-                        'openPrice': self.finnhub_client.quote(ticker)['o'],
-                        # Use finnhub for Bitcoin quotes.
-                        'lastPrice': self.finnhub_client.quote(ticker)['c']
-                    }
-                else:
+            if ticker in td_quotes:
+                if not portfolio:
                     ticker_data = {
                         'description': td_quotes[ticker]['description'],
-                        'longQuantity': float(tickers[ticker][0]),
-                        'averagePrice': tickers[ticker][1],
+                        'longQuantity': tickers[ticker]['longQuantity'],
+                        'averagePrice': tickers[ticker]['averagePrice'],
                         'openPrice': td_quotes[ticker]['openPrice'],
                         'lastPrice': td_quotes[ticker]['lastPrice'],
                     }
+                else:
+                    if crypto:
+                        ticker_data = {
+                            'description': tickers[ticker][0],
+                            'longQuantity': float(tickers[ticker][1]),
+                            'averagePrice': tickers[ticker][2],
+                            'openPrice': self.finnhub_client.quote(ticker)['o'],
+                            # Use finnhub for Bitcoin quotes.
+                            'lastPrice': self.finnhub_client.quote(ticker)['c']
+                        }
+                    else:
+                        ticker_data = {
+                            'description': td_quotes[ticker]['description'],
+                            'longQuantity': float(tickers[ticker][0]),
+                            'averagePrice': tickers[ticker][1],
+                            'openPrice': td_quotes[ticker]['openPrice'],
+                            'lastPrice': td_quotes[ticker]['lastPrice'],
+                        }
+            else:
+                print('WARNING: Stock ticker "{}" is not found from portfolio: {}. Remove from portfolio to suppress this message.'.format(ticker, name))
             quotes[ticker] = ticker_data
         return quotes
 
@@ -491,7 +501,7 @@ class PortfolioLibrary:
             for x in portfolio:
                 tickers[x] = portfolio[x]  # Convert list to dict of dicts w/ ticker as the key
 
-        quotes = self.get_quotes(tickers, portfolio, crypto)
+        quotes = self.get_quotes(name, tickers, portfolio, crypto)
 
         total_gain_p = 0
         total_cost = 0
