@@ -43,6 +43,7 @@ class PortfolioLibrary:
         self.td = None
         self.td_roth = None
         self.no_crypto = True
+        self.no_unvested = True
 
         self.td_client = TDClient(
             client_id=self.td_driver.client_id,
@@ -215,6 +216,8 @@ class PortfolioLibrary:
         for portfolio in self.get_portfolio_names():
             if self.no_crypto and portfolio == 'CRYPTO':
                 continue
+            if self.no_unvested and 'UNVESTED' in portfolio:
+                continue        
             try:
                 self.print_portfolio(portfolio, silent=True)
             except TypeError:

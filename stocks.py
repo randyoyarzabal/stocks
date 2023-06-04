@@ -54,6 +54,8 @@ by {}
                           default=False, help='Don\'t display \'Totals\' row.')
     optional.add_argument('-ic', '--crypto', action='store_true',
                           default=False, help='Include crypto in portfolio statistics.')
+    optional.add_argument('-iu', '--unvested', action='store_true',
+                          default=False, help='Include unvested stocks in portfolio statistics.')
     p_actions = optional.add_mutually_exclusive_group()
     p_actions.add_argument('-s', '--stats', action='store_true',
                            default=False, help='Display portfolio statistics.')
@@ -80,6 +82,7 @@ by {}
         pl.t_width = args.terminal_width
         pl.totals = not args.no_totals
         pl.no_crypto = not args.crypto
+        pl.no_unvested = not args.unvested
         if not args.auth:
             pl.load_portfolios()
         if args.portfolio is not None:
