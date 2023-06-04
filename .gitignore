@@ -1,4 +1,5 @@
 # Project-based user specific
+backup/*
 history/
 config/
 history/*
