@@ -462,7 +462,7 @@ class PortfolioLibrary:
                             'lastPrice': td_quotes[ticker]['lastPrice'],
                         }
             else:
-                print('WARNING: Stock ticker "{}" is not found from portfolio: {}. Remove from portfolio to suppress this message.'.format(ticker, name))
+                print('WARNING: Stock ticker "{}" not found in {}. Remove from portfolio to suppress this message.'.format(ticker, name))
             quotes[ticker] = ticker_data
         return quotes
 
