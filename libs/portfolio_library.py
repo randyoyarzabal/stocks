@@ -340,6 +340,11 @@ class PortfolioLibrary:
             if word in d_str:
                 d_str = d_str.replace(word, '')
 
+        # Replace Corporation with "Corp."
+        word = 'Corporation'
+        if word in d_str:
+            d_str = d_str.replace(word, 'Corp.')
+
         # Titlecase words
         if any(substr in d_str for substr in title_words):
             d_str = d_str.title()
@@ -414,6 +419,15 @@ class PortfolioLibrary:
             else:
                 # In dollars
                 gain = '{0:.2f}'.format(pl * qty)
+        else:
+            # If a stock didn't cost us anything, it's 100% gain. 
+            #  i.e. rewards, promotions.
+            if percent:
+                gain = '{0:.2f}'.format(100)
+            else:
+                # In dollars
+                gain = '{0:.2f}'.format(qty * price)
+
         return float(gain)
 
     def num_fmt(self, num, t_num=None, color=True, symbol=True, percent=False, nround=True):
@@ -519,6 +533,10 @@ class PortfolioLibrary:
 
         quotes = self.get_quotes(name, tickers, portfolio, crypto)
 
+        # print("test>>")
+        # print(quotes)
+        # print("<<test")
+
         total_gain_p = 0
         total_cost = 0
         total_gain_d = 0
@@ -542,6 +560,16 @@ class PortfolioLibrary:
                 cost = stock['averagePrice']
 
             price = stock['lastPrice']
+
+            # Sometimes, there isn't a price for a crypto, if this is the case
+            #  use a user-defined price, 4th field in the portfolio (if defined)
+            if crypto:
+                # Check if the quote is 0
+                if price == 0:
+                    # Is there a user-defined quote, use it.
+                    if len(portfolio[ticker]) == 4:
+                        price = portfolio[ticker][3]
+
             desc = self.get_desc(stock['description'])
 
             gain_d = self.get_gain(qty, cost, price)
