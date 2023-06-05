@@ -55,8 +55,8 @@ class PortfolioLibrary:
         try:
             with HiddenPrints(not debug):
                 self.td_client.get_quotes(instruments=['AAPL'])  # A test API call to induce error/re-auth if needed.
-        except TknExpError:
-            pass
+        # except TknExpError:
+        #     pass
         except ConnectionError as ce:
             print("Unable to make a connection TD Ameritrade API.  Exiting with errors:")
             print(ce)
@@ -221,7 +221,7 @@ class PortfolioLibrary:
             try:
                 self.print_portfolio(portfolio, silent=True)
             except TypeError:
-                print ('ERROR: Authentication expired? Try reauthenticating: "$> stocks.py --auth"')
+                print ('ERROR: Authentication expired? Try reauthenticating: "$> stocks.py --auth -f"')
                 exit()
             except ForbidError:
                 print ('WARNING: No access to account: "{}". Remove from portfolio list to suppress this message.'.format(portfolio))
@@ -536,10 +536,6 @@ class PortfolioLibrary:
 
         quotes = self.get_quotes(name, tickers, portfolio, crypto)
 
-        # print("test>>")
-        # print(quotes)
-        # print("<<test")
-
         total_gain_p = 0
         total_cost = 0
         total_gain_d = 0
@@ -572,6 +568,8 @@ class PortfolioLibrary:
                     # Is there a user-defined quote, use it.
                     if len(portfolio[ticker]) == 4:
                         price = portfolio[ticker][3]
+                    else:
+                        print("WARNING: Price $0 found for {} and no default price found. Define a 4th field in the portfolio file to supress this message.".format(ticker))
 
             desc = self.get_desc(stock['description'])
 
