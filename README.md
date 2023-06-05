@@ -5,12 +5,12 @@
 - A Finnhub.io account is required only if processing Crypto quotes.
 
 ## Quick Start
-1. Install package requirements from "requirements.txt"
+1. Install package requirements from `requirements.txt`
 2. Create a config file (sample provided) config.json, fill in the "API_KEY" vars.
-3. Create portfolio JSON files (samples provided) named <portfolio>.json.  For example "webull.json".
+3. Create portfolio JSON files (samples provided) named <portfolio>.json.  For example `webull.json`.
    Entries in this file is: Portfolio, Symbol, Number of Shares, Cost.
 4. Create a copy of the .env_sample to .env and edit to suit.
-5. Run the authentication for the first time: ./stocks.py -a
+5. Run the authentication for the first time: `./stocks.py -a`
 
 ## Portfolio JSON Format
 
@@ -33,17 +33,18 @@ Example:
 Example:
 ```json
 {
-  "NAME": "ROBINHOOD",
-  "HOLDINGS": {
-    "SEV": [
-      50,
-      10.25
-    ],
-    "GSAT": [
-      200,
-      1.56,
-      1.99 # This is an optional element to define a price (if quote not available.)
-    ],
+   "__COMMENTS__": "Ticker, # of Shares, $ Cost., Optional $ Price",
+   "NAME": "ROBINHOOD",
+   "HOLDINGS": {
+      "SEV": [
+         50,
+         10.25
+      ],
+      "GSAT": [
+         200,
+         1.56,
+         1.99 # This is an optional element to define a price (if quote not available.)
+      ],
   }
 }
 ```
