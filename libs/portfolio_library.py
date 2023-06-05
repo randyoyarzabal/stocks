@@ -414,22 +414,19 @@ class PortfolioLibrary:
 
     def get_gain(self, qty, cost, price, percent=False):
         gain = 0
-        if cost != 0:  # For some reason, every now and then, some tickers have 0 cost.
-            pl = price - cost  # gain/loss
-            if percent:
+        pl = price - cost  # gain/loss
+        if percent:
+            if cost != 0:  # For some reason, every now and then, some tickers have 0 cost.
                 gd = pl / cost  # gain in decimal
                 gain = '{0:.2f}'.format(100 * gd)
             else:
-                # In dollars
-                gain = '{0:.2f}'.format(pl * qty)
+                if not self.day:
+                    # If a stock didn't cost us anything, it's 100% gain. 
+                    #  i.e. rewards, promotions.
+                    gain = '{0:.2f}'.format(100)
         else:
-            # If a stock didn't cost us anything, it's 100% gain. 
-            #  i.e. rewards, promotions.
-            if percent:
-                gain = '{0:.2f}'.format(100)
-            else:
-                # In dollars
-                gain = '{0:.2f}'.format(qty * price)
+            # In dollars
+            gain = '{0:.2f}'.format(pl * qty)
 
         return float(gain)
 
