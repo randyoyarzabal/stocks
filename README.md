@@ -54,6 +54,7 @@ Example:
 - Stats: `./stocks.py -s`
 - Portfolio View: `./stocks.py -p <portfolio>`
 - All Portfolios: `./stocks.py -a all`
+- All Portfolios (show Crypto and Unvested): `./stocks.py -a all -ic -iu`
 
 ## Other Notes
 - You can track "unvested" stocks, i.e. restricted stock units.  Name the porfolio *UNVESTED, and it will automaticlly be excluded from view unless the `-iu, --unvested` options are used.
