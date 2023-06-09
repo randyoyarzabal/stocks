@@ -564,7 +564,9 @@ class PortfolioLibrary:
                 if price == 0:
                     # Is there a user-defined quote, use it.
                     if len(portfolio[ticker]) == 4:
+                        print("WARNING: Price $0 found for {}, using user-defined price: {}.".format(ticker, portfolio[ticker][3]))
                         price = portfolio[ticker][3]
+                        cost = price # Since the price is 0, assume cost is the same.
                     else:
                         print("WARNING: Price $0 found for {} and no default price found. Define a 4th field in the portfolio file to supress this message.".format(ticker))
 
