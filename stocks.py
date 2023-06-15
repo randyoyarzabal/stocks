@@ -89,6 +89,9 @@ by {}
             # Display individual portfolios (-p)
             for portfolio in args.portfolio:
                 if portfolio[0] == 'ALL':
+                    # For ALL, set default to 135
+                    if args.terminal_width == 120:
+                        pl.t_width = 140
                     pl.print_stats(print_stats=False, print_stocks=True)
                 else:
                     pl.print_portfolio(portfolio[0])

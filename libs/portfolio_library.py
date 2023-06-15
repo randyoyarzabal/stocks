@@ -97,7 +97,8 @@ class PortfolioLibrary:
             print('All Portfolios (Ave. Gain%: {})'.format(self.num_fmt(self.stats['Averages']['Gain%'], percent=True)))
             print(columnar(data,
                            headers=self.headers,
-                           no_borders=(not self.borders)
+                           no_borders=(not self.borders),
+                           terminal_width=self.t_width
                            )
                   )
 
@@ -128,7 +129,8 @@ class PortfolioLibrary:
 
         print(columnar(t_data,
                        headers=t_header,
-                       no_borders=(not self.borders)
+                       no_borders=(not self.borders),
+                       terminal_width=self.t_width
                        )
               )
 
@@ -176,7 +178,8 @@ class PortfolioLibrary:
             data.append(row)
         print(columnar(data,
                        headers=max_header,
-                       no_borders=(not self.borders)
+                       no_borders=(not self.borders),
+                       terminal_width=self.t_width
                        )
               )
 
@@ -330,6 +333,7 @@ class PortfolioLibrary:
             'AMC Preferred Equity Units, each constituting a',
             'TR ETH Common units of fractional undivided beneficial intere',
             'and Future Mobility Index',
+            'Basket Shares',
         )
 
         title_words = (
@@ -356,6 +360,7 @@ class PortfolioLibrary:
         d_str = re.sub(r'(.*)American [Dd].*', r'\1', d_str)
         d_str = ' '.join(d_str.split())  # Smash multi-spaces to one.
         d_str = d_str.replace('. ,', '.')
+        d_str = d_str.replace(' ,', ',')
         d_str = d_str.strip()
         return d_str
 
@@ -374,7 +379,7 @@ class PortfolioLibrary:
 
             row = [item['symbol'], desc, item['last'], change, vol]
             data.append(row)
-        table = columnar(data, headers=['Symbol', 'Description', 'Price', 'Change %', 'Vol'], no_borders=True)
+        table = columnar(data, headers=['Symbol', 'Description', 'Price', 'Change %', 'Vol'], no_borders=True, terminal_width=self.t_width)
         print(table)
 
     def __process_watch_list(self, wlist):
@@ -395,7 +400,7 @@ class PortfolioLibrary:
             data.append(row)
 
         table = columnar(data, headers=['Symbol', 'Description', 'Price', 'Day Chg$', 'Vol', 'Exchange'],
-                         no_borders=True)
+                         no_borders=True, terminal_width=self.t_width)
         print(table)
 
     def get_watch_list(self, list_name=None):
@@ -680,12 +685,12 @@ class PortfolioLibrary:
                 symbols[symbol] = int(qty)
 
         print('TRADES')
-        table = columnar(trades, headers=['Date', 'Type', 'Symbol', 'Qty', 'Cost', 'Amount'], no_borders=True)
+        table = columnar(trades, headers=['Date', 'Type', 'Symbol', 'Qty', 'Cost', 'Amount'], no_borders=True, terminal_width=self.t_width)
         print(table)
 
         if account != self.td_roth:
             print('TRANSFERS')
             for key in sorted(symbols):
                 xfers.append([key, symbols[key]])
-            table = columnar(xfers, headers=['Symbol', 'Qty'], no_borders=True)
+            table = columnar(xfers, headers=['Symbol', 'Qty'], no_borders=True, terminal_width=self.t_width)
             print(table)
